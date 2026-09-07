@@ -97,7 +97,7 @@ export default function Home() {
       <section className="relative mx-auto max-w-7xl px-5 pb-16 pt-7 sm:px-8 lg:px-10">
         <header className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 font-semibold tracking-tight text-[#17152a]" aria-label="ContentAI Generator">
-            <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl shadow-lg shadow-violet-200"><img src="/contentai-logo.png" alt="Логотип ContentAI" className="h-full w-full object-cover" /></span>
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#5b4cf0] to-[#8b7cff] text-base font-black text-white shadow-lg shadow-violet-200" aria-label="Логотип ContentAI">C</span>
             <span>ContentAI <span className="text-[#766e92]">Generator</span></span>
           </div>
           <span className="rounded-full border border-[#e5e2f4] bg-white/70 px-3 py-2 text-[10px] font-medium text-[#716c89] sm:px-4 sm:text-xs">{t.ai}</span>
