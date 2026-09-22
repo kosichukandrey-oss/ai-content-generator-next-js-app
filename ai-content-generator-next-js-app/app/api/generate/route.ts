@@ -109,7 +109,7 @@ export async function POST(request: Request) {
         "X-Title": "ContentAI Generator",
       },
       body: JSON.stringify({
-        model: process.env.OPENROUTER_MODEL || "openrouter/free",
+        model: process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free",
         messages: [
           {
             role: "system",
