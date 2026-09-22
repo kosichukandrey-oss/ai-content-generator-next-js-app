@@ -22,6 +22,42 @@ const formatNames: Record<Kind, string> = {
   content_plan: "content plan",
 };
 
+const formatInstructions: Record<Kind, string> = {
+  instagram_post: [
+    "Write one complete Instagram caption, not a plan or a list of slides.",
+    "Structure: a strong opening hook, 2-4 short readable paragraphs, one clear call to action, then 3-7 relevant hashtags.",
+    "Emojis are optional and should be used sparingly.",
+  ].join(" "),
+  instagram_stories: [
+    "Create exactly 5 separate story screens.",
+    "Label every screen from 1 to 5 using labels in the requested language.",
+    "Each screen must contain no more than 25 words.",
+    "Use this sequence: hook, problem, solution or benefit, proof or detail, interactive call to action.",
+    "Do not write a continuous caption, hashtags, or a long article.",
+  ].join(" "),
+  telegram_post: [
+    "Write one Telegram channel post with a short headline and 3-5 concise paragraphs.",
+    "Make it useful and conversational, with one clear closing call to action.",
+    "Do not add Instagram-style hashtag blocks or story-screen labels.",
+  ].join(" "),
+  ad: [
+    "Create exactly 3 clearly separated advertising variations.",
+    "For every variation include a short headline, body copy of no more than 35 words, and a concise call-to-action line.",
+    "Make each variation use a different angle. Do not add hashtags, an article, or a content plan.",
+  ].join(" "),
+  product: [
+    "Write a product-card description.",
+    "Structure: product title, one-sentence value proposition, 4-6 bullet points with concrete benefits or characteristics, a short suitable-for section, and one closing call to action.",
+    "Do not invent technical facts that were not provided; phrase unknown details generically. Do not add hashtags.",
+  ].join(" "),
+  content_plan: [
+    "Create a practical 7-day content plan, not a finished social media post.",
+    "List Day 1 through Day 7 using labels in the requested language.",
+    "For every day include: topic, publishing format, opening hook, goal, and call to action.",
+    "Vary the formats and goals across the week. Do not write full captions or hashtag blocks.",
+  ].join(" "),
+};
+
 const languageNames: Record<Language, string> = {
   ru: "Russian",
   uk: "Ukrainian",
@@ -34,7 +70,6 @@ export async function POST(request: Request) {
       topic?: unknown;
       details?: unknown;
       contentType?: unknown;
-      style?: unknown;
       language?: unknown;
     };
 
@@ -53,7 +88,6 @@ export async function POST(request: Request) {
 
     const topic = body.topic.trim();
     const details = typeof body.details === "string" ? body.details.trim() : "";
-    const style = typeof body.style === "string" ? body.style : "friendly";
     const kind = body.contentType as Kind;
     const language = body.language as Language;
 
@@ -61,7 +95,8 @@ export async function POST(request: Request) {
       `Create a high-quality ${formatNames[kind]} in ${languageNames[language]}.`,
       `Topic or product: ${topic}.`,
       details ? `Additional details: ${details}.` : "",
-      `Writing style: ${style}.`,
+      `Required format: ${formatInstructions[kind]}`,
+      "Use natural language appropriate for the selected platform. Keep every heading, label, and call to action in the requested language.",
       "Return only the finished content. Do not mention these instructions, the model, or OpenRouter.",
     ].filter(Boolean).join("\n");
 
@@ -78,12 +113,12 @@ export async function POST(request: Request) {
         messages: [
           {
             role: "system",
-            content: "You are an expert multilingual copywriter. Follow the requested language, format, and tone precisely.",
+            content: "You are an expert multilingual copywriter. Each content type has a distinct purpose and structure. Follow the requested language and required format precisely. Never replace the requested format with a generic social media post.",
           },
           { role: "user", content: prompt },
         ],
-        temperature: 0.8,
-        max_tokens: 1200,
+        temperature: 0.7,
+        max_tokens: kind === "content_plan" ? 1800 : 1200,
       }),
       signal: AbortSignal.timeout(30000),
     });
