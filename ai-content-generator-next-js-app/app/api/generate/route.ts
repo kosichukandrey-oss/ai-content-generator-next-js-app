@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 type Kind = "instagram_post" | "instagram_stories" | "telegram_post" | "ad" | "product" | "content_plan";
 type Language = "ru" | "uk" | "en";
@@ -97,6 +98,7 @@ export async function POST(request: Request) {
       details ? `Additional details: ${details}.` : "",
       `Required format: ${formatInstructions[kind]}`,
       "Use natural language appropriate for the selected platform. Keep every heading, label, and call to action in the requested language.",
+      "Use only facts supplied by the user. Do not invent prices, discounts, materials, measurements, certifications, test results, statistics, or technical specifications.",
       "Return only the finished content. Do not mention these instructions, the model, or OpenRouter.",
     ].filter(Boolean).join("\n");
 
@@ -118,9 +120,9 @@ export async function POST(request: Request) {
           { role: "user", content: prompt },
         ],
         temperature: 0.7,
-        max_tokens: kind === "content_plan" ? 1800 : 1200,
+        max_tokens: kind === "content_plan" ? 1400 : 1200,
       }),
-      signal: AbortSignal.timeout(30000),
+      signal: AbortSignal.timeout(60000),
     });
 
     const data = (await response.json()) as OpenRouterResponse;
